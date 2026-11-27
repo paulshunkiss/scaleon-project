@@ -36,6 +36,10 @@ def slugify(text):
     return re.sub(r"[^a-z0-9]+", "-", text.lower()).strip("-")
 
 
+def strip_num(text):
+    return re.sub(r"^\d+\.\s*", "", text)
+
+
 def fr_date(d):
     return f"{d.day} {MONTHS[d.month - 1]} {d.year}"
 
@@ -144,7 +148,7 @@ def article_page(p, posts, header, footer):
         schema += ld({"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [
             {"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in p["faq"]]})
     extra = f'<meta property="article:published_time" content="{p["date"]}">\n<meta property="article:section" content="{html.escape(p["category"])}">\n<meta name="keywords" content="{html.escape(p.get("keywords", ""))}">\n' + schema
-    toc = "".join(f'<li><a href="#{a}">{html.escape(re.sub(r"^\d+\.\s*", "", t))}</a></li>' for a, t in p["toc"])
+    toc = "".join(f'<li><a href="#{a}">{html.escape(strip_num(t))}</a></li>' for a, t in p["toc"])
     faq = "".join(f"<details><summary>{html.escape(q)}</summary><p>{html.escape(a)}</p></details>" for q, a in p["faq"])
     related = sorted((o for o in posts if o["slug"] != p["slug"]), key=lambda o: (o["category"] != p["category"], -o["date"].toordinal()))[:3]
     return head(f"{p['title']} | Blog SCALEON", p["description"], url, img, "article", extra) + header + f"""
