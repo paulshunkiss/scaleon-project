@@ -41,6 +41,14 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  const chips = document.querySelectorAll('.chip[data-filter]');
+  chips.forEach((chip) => chip.addEventListener('click', () => {
+    chips.forEach((c) => c.classList.toggle('active', c === chip));
+    document.querySelectorAll('.post-card').forEach((card) => {
+      card.hidden = chip.dataset.filter !== '*' && card.dataset.cat !== chip.dataset.filter;
+    });
+  }));
+
   const year = document.getElementById('year');
   if (year) year.textContent = new Date().getFullYear();
 });
